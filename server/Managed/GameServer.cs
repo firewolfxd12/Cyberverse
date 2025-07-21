@@ -80,7 +80,8 @@ public class GameServer: NativeGameServer
     }
     
     // TODO: Move somewhere.
-    public const uint PROTOCOL_VERSION_CURRENT = 0x0;
+    // Updated for Cyberpunk 2.3 compatibility
+    public const uint PROTOCOL_VERSION_CURRENT = 0x3;
     
     protected virtual void ProcessMessage(Message message)
     {

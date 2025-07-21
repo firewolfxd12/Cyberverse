@@ -6,7 +6,7 @@
 > pieces before we can start to recommend using CyberVerse to play on.
 
 ## What is Cyberverse exactly?
-Cyberverse is a very much in progress implementation of a multiplayer into Cyberpunk 2077 v2.1.  
+Cyberverse is a very much in progress implementation of a multiplayer into Cyberpunk 2077 v2.3.
 It being a "framework" additionally means that the server side is flexibly extended by Plugins that provide additional behavior. As such, it will be a good choice for Roleplaying Servers.
 
 Besides being extendable, it also features a working sandbox mode, that already handles most of the hard topics

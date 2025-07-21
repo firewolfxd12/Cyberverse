@@ -2,7 +2,8 @@
 
 #include <cstdint>
 
-constexpr uint32_t PROTOCOL_VERSION_CURRENT = 0x0;
+// Updated for Cyberpunk 2.3 compatibility
+constexpr uint32_t PROTOCOL_VERSION_CURRENT = 0x3;
 
 struct MessageFrame {
     uint8_t channel_id;
