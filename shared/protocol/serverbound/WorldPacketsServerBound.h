@@ -66,7 +66,7 @@ struct PlayerSpawnCar {
 };
 
 struct PlayerUnmountCar {
-    // TODO: NetworkedEntityId
+    uint64_t networkedEntityId;
 
     inline static void FillMessageFrame(MessageFrame& frame)
     {

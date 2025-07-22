@@ -182,11 +182,17 @@ bool GameServer::EnqueueMessage(HSteamNetConnection connection, uint8_t channel_
         return false;
     }
 
-    // TODO: derive the send flags from the channel id, i.e. lookup registered channels.
+    // Derive reliability based on the channel id
+    auto sendFlags = k_nSteamNetworkingSend_Reliable;
+    if (channel_id == 1)
+    {
+        sendFlags = k_nSteamNetworkingSend_Unreliable;
+    }
+
     assert(data.size() < std::numeric_limits<uint32_t>::max());
 
     const auto result = m_pInterface->SendMessageToConnection(connection, data.data(),
-        static_cast<uint32_t>(data.size()), k_nSteamNetworkingSend_Reliable, nullptr);
+        static_cast<uint32_t>(data.size()), sendFlags, nullptr);
 
     if (result == k_EResultOK)
     {

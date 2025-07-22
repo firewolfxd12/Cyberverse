@@ -129,8 +129,19 @@ void PlayerActionTracker::OnUnmounting(RED4ext::Handle<RED4ext::game::mounting::
     const RED4ext::game::Object* ptr = strongLock;
     const auto vehicleInstance = RED4ext::Handle((RED4ext::VehicleObject*)ptr);
 
-    // TODO: Read the networkedEntityId from the entity, so we can be precise and the server doesn't need to guess.
-    const PlayerUnmountCar unmount_car = {};
+    auto entityId = vehicleInstance->entityID;
+    const auto netIdOpt = Red::GetGameSystem<NetworkGameSystem>()->GetNetworkedEntityId(entityId);
+
+    PlayerUnmountCar unmount_car = {};
+    if (netIdOpt.has_value())
+    {
+        unmount_car.networkedEntityId = netIdOpt.value();
+    }
+    else
+    {
+        unmount_car.networkedEntityId = 0;
+    }
+
     Red::GetGameSystem<NetworkGameSystem>()->EnqueueMessage(0, unmount_car);
 }
 

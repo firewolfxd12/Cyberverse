@@ -45,7 +45,7 @@ public:
     void OnConnectionStatusChanged(const SteamNetConnectionStatusChangedCallback_t* pInfo) const;
 public:
     /* DLL API start */
-    bool ListenOn(uint16_t nPort = 1337);
+    bool ListenOn(uint16_t nPort = 7777);
     void RunBlocking();
     void Update(float deltaTime);
 

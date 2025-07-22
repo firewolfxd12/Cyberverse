@@ -512,3 +512,15 @@ void NetworkGameSystem::InterpolatePuppets(const float deltaTime)
         }
     }
 }
+
+std::optional<uint64_t> NetworkGameSystem::GetNetworkedEntityId(const RED4ext::ent::EntityID& entityId) const
+{
+    for (const auto& [netId, id] : m_networkedEntitiesLookup)
+    {
+        if (id.hash == entityId.hash)
+        {
+            return netId;
+        }
+    }
+    return std::nullopt;
+}

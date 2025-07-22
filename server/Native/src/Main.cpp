@@ -14,7 +14,7 @@ int main()
     }
 
     const auto gameserver = new GameServer();
-    gameserver->ListenOn(1337);
+    gameserver->ListenOn(7777);
     gameserver->RunBlocking();
     GameServer::Destroy();
 }

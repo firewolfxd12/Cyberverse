@@ -68,6 +68,8 @@ public:
 
     uint64_t NextNetworkTick() { return m_networkTickCounter++; }
 
+    std::optional<uint64_t> GetNetworkedEntityId(const RED4ext::ent::EntityID& entityId) const;
+
     /// Called from the plugin load and unload events
     static bool Load();
     /// Called from the plugin load and unload events
