@@ -29,6 +29,8 @@ void PlayerActionTracker::RecordPlayerAction(RED4ext::CName actionName, RED4ext:
         const auto [X, Y, Z, W] = Cyberverse::Utils::Entity_GetWorldPosition(player);
 
         PlayerActionTracked tracked = {};
+        tracked.buttonState = false;
+        tracked.networkTick = 0;
         tracked.action = eACTION_JUMP;
 
         tracked.worldTransform = {};

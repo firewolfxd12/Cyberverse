@@ -9,7 +9,8 @@ struct PlayerJoinWorld {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = EPLAYER_JOIN_WORLD;
-        frame.channel_id = 0; // TODO
+        // Join packets are small and should be reliable
+        frame.channel_id = 0;
     }
 };
 
@@ -21,28 +22,33 @@ enum PlayerAction: uint8_t
 
 struct PlayerActionTracked
 {
-    // TODO: bool buttonState? (We could trigger on press or release)
-    // TODO: uint64_t networkTick (relative to the connect in relative server timestamps, because we probably get those batched and relay those batched)
+    // True when the button causing the action was pressed, false on release
+    bool buttonState;
+    // Relative tick count since connection establishment
+    uint64_t networkTick;
     PlayerAction action;
     Vector3 worldTransform;
 
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = ePlayerActionTracked;
-        frame.channel_id = 1; // TODO
+        // Input actions are sent unreliably
+        frame.channel_id = 1;
     }
 };
 
 struct PlayerPositionUpdate
 {
-    // TODO: uint64_t networkTick (relative to the connect in relative server timestamps, because we probably get those batched and relay those batched)
+    // Relative tick count since connection establishment
+    uint64_t networkTick;
     Vector3 worldTransform;
     float yaw;
 
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = ePlayerPositionUpdate;
-        frame.channel_id = 1; // TODO
+        // Position updates are sent on the unreliable channel
+        frame.channel_id = 1;
     }
 };
 
@@ -55,7 +61,7 @@ struct PlayerSpawnCar {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = ePlayerSpawnCar;
-        frame.channel_id = 0; // TODO
+        frame.channel_id = 0;
     }
 };
 
@@ -65,7 +71,7 @@ struct PlayerUnmountCar {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = ePlayerUnmountCar;
-        frame.channel_id = 0; // TODO
+        frame.channel_id = 0;
     }
 };
 
@@ -78,7 +84,7 @@ struct PlayerEquipItem {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = ePlayerEquipItem;
-        frame.channel_id = 0; // TODO
+        frame.channel_id = 0;
     }
 };
 
@@ -91,6 +97,6 @@ struct PlayerShoot {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = ePlayerShoot;
-        frame.channel_id = 0; // TODO
+        frame.channel_id = 0;
     }
 };
