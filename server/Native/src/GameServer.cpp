@@ -8,9 +8,11 @@
 #include <serverbound/EMessageTypeServerbound.h>
 #include <serverbound/AuthPacketsServerBound.h>
 #include <serverbound/WorldPacketsServerBound.h>
+#include <serverbound/AppearancePacketsServerBound.h>
 #include <clientbound/EMessageTypeClientbound.h>
 #include <clientbound/AuthPacketsClientBound.h>
 #include <clientbound/WorldPacketsClientBound.h>
+#include <clientbound/AppearancePacketsClientBound.h>
 
 bool GameServer::Initialize()
 {
@@ -265,6 +267,8 @@ void GameServer::PollIncomingMessages()
             DESERIALIZE_RECV_QUEUE(ePlayerUnmountCar, PlayerUnmountCar)
             DESERIALIZE_RECV_QUEUE(ePlayerEquipItem, PlayerEquipItem)
             DESERIALIZE_RECV_QUEUE(ePlayerShoot, PlayerShoot)
+            DESERIALIZE_RECV_QUEUE(ePlayerAppearance, PlayerAppearance)
+            DESERIALIZE_RECV_QUEUE(ePlayerLocomotion, PlayerLocomotion)
             default:
                 printf("Unknown Message Type: %d\n", frame.message_type);
                 break;
@@ -344,6 +348,8 @@ void GameServer::ProcessSendQueue()
             SERIALIZE_SEND_QUEUE(eTeleportEntity, TeleportEntity)
             SERIALIZE_SEND_QUEUE(eDestroyEntity, DestroyEntity)
             SERIALIZE_SEND_QUEUE(eEquipItemEntity, EquipItemEntity)
+            SERIALIZE_SEND_QUEUE(eApplyAppearance, ApplyAppearance)
+            SERIALIZE_SEND_QUEUE(eUpdateLocomotion, UpdateLocomotion)
             default:
                 printf("Unknown messageType: %d\n", val.messageType);
         }

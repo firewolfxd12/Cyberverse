@@ -1,5 +1,6 @@
 ﻿using Cyberverse.Server.NativeLayer.Protocol.Clientbound;
 using Cyberverse.Server.Types;
+using System.Text;
 
 namespace Cyberverse.Server.Services;
 
@@ -31,6 +32,17 @@ public class EntityTracker
             spawnPosition = entity.WorldTransform
         };
         _server.EnqueueMessage(EMessageTypeClientbound.SpawnEntity, connectionId, 1, spawnEntity);
+
+        if (!string.IsNullOrEmpty(entity.AppearanceJson))
+        {
+            var apply = new ApplyAppearance
+            {
+                networkedEntityId = entity.NetworkedEntityId,
+                dataLength = (uint)System.Text.Encoding.UTF8.GetByteCount(entity.AppearanceJson),
+                data = System.Text.Encoding.UTF8.GetBytes(entity.AppearanceJson)
+            };
+            _server.EnqueueMessage(EMessageTypeClientbound.ApplyAppearance, connectionId, 0, apply);
+        }
     }
 
     private void SendDespawnPacket(ulong networkEntityId, uint connectionId)

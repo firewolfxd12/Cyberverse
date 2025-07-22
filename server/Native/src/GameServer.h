@@ -3,6 +3,8 @@
 
 #include <queue>
 #include <serverbound/AuthPacketsServerBound.h>
+#include <serverbound/WorldPacketsServerBound.h>
+#include <serverbound/AppearancePacketsServerBound.h>
 
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>

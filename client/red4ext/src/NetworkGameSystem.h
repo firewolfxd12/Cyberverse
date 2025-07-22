@@ -15,11 +15,14 @@
 
 #include <RedLib.hpp>
 #include <clientbound/WorldPacketsClientBound.h>
+#include <clientbound/AppearancePacketsClientBound.h>
 #include <map>
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 
 #include <serverbound/WorldPacketsServerBound.h>
+#include <serverbound/AppearancePacketsServerBound.h>
+#include "AppearanceUtils.h"
 
 class NetworkGameSystem : public Red::IGameSystem
 {
@@ -69,6 +72,8 @@ public:
     uint64_t NextNetworkTick() { return m_networkTickCounter++; }
 
     std::optional<uint64_t> GetNetworkedEntityId(const RED4ext::ent::EntityID& entityId) const;
+
+    void TrackLocomotion(float deltaTime);
 
     /// Called from the plugin load and unload events
     static bool Load();

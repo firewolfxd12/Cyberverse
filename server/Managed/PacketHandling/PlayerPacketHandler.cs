@@ -20,6 +20,8 @@ public class PlayerPacketHandler
     private readonly TypedPacketHandler<PlayerUnmountCar> _playerUnmountHandler;
     private readonly TypedPacketHandler<PlayerEquipItem> _playerEquipHandler;
     private readonly TypedPacketHandler<PlayerShoot> _playerShootHandler;
+    private readonly TypedPacketHandler<PlayerAppearance> _playerAppearanceHandler;
+    private readonly TypedPacketHandler<PlayerLocomotion> _playerLocomotionHandler;
     private EntityTracker? _tracker = null;
     private PlayerService? _players = null;
 
@@ -31,6 +33,8 @@ public class PlayerPacketHandler
         _playerUnmountHandler = new TypedPacketHandler<PlayerUnmountCar>(HandleUnmountCar);
         _playerEquipHandler = new TypedPacketHandler<PlayerEquipItem>(HandleEquip);
         _playerShootHandler = new TypedPacketHandler<PlayerShoot>(HandleShoot);
+        _playerAppearanceHandler = new TypedPacketHandler<PlayerAppearance>(HandleAppearance);
+        _playerLocomotionHandler = new TypedPacketHandler<PlayerLocomotion>(HandleLocomotion);
     }
 
     protected void HandleJoinWorld(GameServer server, EMessageTypeServerbound messageType, byte channelId, uint connectionId, PlayerJoinWorld content)
@@ -185,6 +189,26 @@ public class PlayerPacketHandler
         Logger.Warn($"Shots fired! {content.itemIdWeapon} at {content.startPoint}");
     }
 
+    private void HandleAppearance(GameServer server, EMessageTypeServerbound messageType, byte channelId,
+        uint connectionId, PlayerAppearance content)
+    {
+        if (!_players!.ConnectedPlayers.TryGetValue(connectionId, out var player))
+            return;
+
+        var entity = server.EntityService.SpawnedEntities.Values
+            .FirstOrDefault(e => e.NetworkIdOwner == player.ConnectionId && !e.IsVehicle);
+        if (entity != null)
+        {
+            entity.AppearanceJson = System.Text.Encoding.UTF8.GetString(content.data, 0, (int)content.dataLength);
+        }
+    }
+
+    private void HandleLocomotion(GameServer server, EMessageTypeServerbound messageType, byte channelId,
+        uint connectionId, PlayerLocomotion content)
+    {
+        // Placeholder: store locomotion state if needed
+    }
+
     public void RegisterOnServer(GameServer server)
     {
         _tracker = server.EntityTracker; // TODO: Service registry or even using DI
@@ -196,5 +220,7 @@ public class PlayerPacketHandler
         server.AddPacketHandler(EMessageTypeServerbound.PlayerUnmountCar, _playerUnmountHandler.HandlePacket);
         server.AddPacketHandler(EMessageTypeServerbound.PlayerEquipItem, _playerEquipHandler.HandlePacket);
         server.AddPacketHandler(EMessageTypeServerbound.PlayerShoot, _playerShootHandler.HandlePacket);
+        server.AddPacketHandler(EMessageTypeServerbound.PlayerAppearance, _playerAppearanceHandler.HandlePacket);
+        server.AddPacketHandler(EMessageTypeServerbound.PlayerLocomotion, _playerLocomotionHandler.HandlePacket);
     }
 }

@@ -20,6 +20,7 @@ public class Entity
     public float Yaw;
     // TODO: Remove and derive from recordId
     public bool IsVehicle;
+    public string? AppearanceJson;
 
     public Entity(ulong entityId, ulong recordId)
     {

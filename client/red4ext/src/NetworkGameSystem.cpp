@@ -16,8 +16,12 @@
 
 #include "serverbound/AuthPacketsServerBound.h"
 #include "serverbound/WorldPacketsServerBound.h"
+#include "serverbound/AppearancePacketsServerBound.h"
 #include "clientbound/AuthPacketsClientBound.h"
 #include "clientbound/WorldPacketsClientBound.h"
+#include "clientbound/AppearancePacketsClientBound.h"
+#include <cstring>
+#include "AppearanceUtils.h"
 
 #include <zpp_bits.h>
 
@@ -107,6 +111,7 @@ void NetworkGameSystem::OnNetworkUpdate(RED4ext::FrameInfo& frame_info, RED4ext:
 
     PollIncomingMessages();
     TrackPlayerPosition(frame_info.deltaTime);
+    TrackLocomotion(frame_info.deltaTime);
     InterpolatePuppets(frame_info.deltaTime);
 
     m_pInterface->RunCallbacks(); // This shall be called in a loop.
@@ -444,6 +449,13 @@ bool NetworkGameSystem::OnGameRestored()
     // of "this"
     Red::GetGameSystem<NetworkGameSystem>()->EnqueueMessage(0, join_packet);
 
+    PlayerAppearance appearance = {};
+    auto json = Cyberverse::AppearanceUtils::GetPlayerAppearanceJson(player);
+    const auto size = std::min(json.size(), static_cast<size_t>(512));
+    appearance.dataLength = static_cast<uint32_t>(size);
+    std::memcpy(appearance.data.data(), json.data(), size);
+    this->EnqueueMessage(0, appearance);
+
     m_gameRestored = true;
     return res;
 }
@@ -465,6 +477,23 @@ void NetworkGameSystem::TrackPlayerPosition(float deltaTime)
 
     const PlayerPositionUpdate position_update = { NextNetworkTick(), {  X, Y, Z }, Yaw};
     this->EnqueueMessage(1, position_update);
+}
+
+void NetworkGameSystem::TrackLocomotion(float deltaTime)
+{
+    static float accum = 0.0f;
+    accum += deltaTime;
+    if (accum < 0.05f)
+        return;
+    accum = 0.0f;
+
+    const auto player = Cyberverse::Utils::GetPlayer();
+    PlayerLocomotion locomotion = {};
+    locomotion.state.stanceId = 0;
+    locomotion.state.locomotionId = 0;
+    locomotion.state.overlayId = 0;
+    locomotion.state.phase = 0;
+    this->EnqueueMessage(1, locomotion);
 }
 
 void NetworkGameSystem::InterpolatePuppets(const float deltaTime)
