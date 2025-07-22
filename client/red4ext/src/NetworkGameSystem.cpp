@@ -461,7 +461,7 @@ void NetworkGameSystem::TrackPlayerPosition(float deltaTime)
     const auto orientation = Cyberverse::Utils::Entity_GetWorldOrientation(player);
     const auto [Roll, Pitch, Yaw] = Cyberverse::Utils::Quaternion_ToEulerAngles(orientation);
 
-    const PlayerPositionUpdate position_update = { 0, {  X, Y, Z }, Yaw};
+    const PlayerPositionUpdate position_update = { NextNetworkTick(), {  X, Y, Z }, Yaw};
     this->EnqueueMessage(1, position_update);
 }
 

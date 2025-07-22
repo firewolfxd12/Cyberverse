@@ -34,6 +34,7 @@ private:
     std::map<RED4ext::ent::EntityID, InterpolationData> m_interpolationData;
     std::map<RED4ext::ent::EntityID, RED4ext::Handle<RED4ext::AICommand>> m_LastTeleportCommand;
     float m_TimeSinceLastPlayerPositionSync;
+    uint64_t m_networkTickCounter = 0;
 
 private:
     void OnRegisterUpdates(RED4ext::UpdateRegistrar* aRegistrar) override;
@@ -64,6 +65,8 @@ public:
 
     template<typename T>
     bool EnqueueMessage(uint8_t channel_id, T frame);
+
+    uint64_t NextNetworkTick() { return m_networkTickCounter++; }
 
     /// Called from the plugin load and unload events
     static bool Load();

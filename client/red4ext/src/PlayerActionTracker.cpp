@@ -29,8 +29,9 @@ void PlayerActionTracker::RecordPlayerAction(RED4ext::CName actionName, RED4ext:
         const auto [X, Y, Z, W] = Cyberverse::Utils::Entity_GetWorldPosition(player);
 
         PlayerActionTracked tracked = {};
-        tracked.buttonState = false;
-        tracked.networkTick = 0;
+        // BUTTON_RELEASED means the key went up, all other types mark it as pressed
+        tracked.buttonState = actionType != RED4ext::game::input::ActionType::BUTTON_RELEASED;
+        tracked.networkTick = Red::GetGameSystem<NetworkGameSystem>()->NextNetworkTick();
         tracked.action = eACTION_JUMP;
 
         tracked.worldTransform = {};
