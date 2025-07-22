@@ -437,6 +437,8 @@ bool NetworkGameSystem::OnGameRestored()
 
     PlayerJoinWorld join_packet = {};
     join_packet.position = { position.X, position.Y, position.Z };
+    const auto recordId = Cyberverse::Utils::GameObject_GetRecordID(player);
+    join_packet.recordId = recordId.value;
 
     // TODO: Maybe we could manage this singleton access better? But then, the Game's GameSystem Container is the owner
     // of "this"

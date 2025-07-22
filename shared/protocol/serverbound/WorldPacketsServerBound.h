@@ -5,6 +5,7 @@
 
 struct PlayerJoinWorld {
     Vector3 position;
+    uint64_t recordId;
 
     inline static void FillMessageFrame(MessageFrame& frame)
     {

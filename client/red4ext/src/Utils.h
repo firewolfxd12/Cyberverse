@@ -105,5 +105,12 @@ namespace Cyberverse::Utils
         Red::CallVirtual(vehicle, "GetRecordID", dbId);
         return dbId;
     }
+
+    inline RED4ext::TweakDBID GameObject_GetRecordID(const RED4ext::Handle<RED4ext::GameObject>& object)
+    {
+        RED4ext::TweakDBID dbId = {};
+        Red::CallVirtual(object, "GetRecordID", dbId);
+        return dbId;
+    }
 }
 

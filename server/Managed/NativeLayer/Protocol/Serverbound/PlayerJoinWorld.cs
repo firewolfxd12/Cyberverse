@@ -7,4 +7,5 @@ namespace Cyberverse.Server.NativeLayer.Protocol.Serverbound;
 public struct PlayerJoinWorld
 {
     public Vector3 position;
+    public ulong recordId;
 }

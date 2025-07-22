@@ -37,11 +37,10 @@ public class PlayerPacketHandler
     {
         if (_players!.ConnectedPlayers.TryGetValue(connectionId, out var player))
         {
-            Logger.Trace("Player {0} joined the world at ({1}, {2}, {3})", player.Name, 
-                content.position.x, content.position.y, content.position.z);
+            Logger.Trace("Player {0} joined the world at ({1}, {2}, {3}) with recordId {4}", player.Name,
+                content.position.x, content.position.y, content.position.z, content.recordId);
 
-            var choice = Random.Next(PossiblePlayerNpcChoice.Length);
-            var entity = server.EntityService.CreateEntity(PossiblePlayerNpcChoice[choice]);
+            var entity = server.EntityService.CreateEntity(content.recordId);
             entity.WorldTransform = content.position; // Spawn the entity at the right spot already
             entity.NetworkIdOwner = player.ConnectionId;
                 
