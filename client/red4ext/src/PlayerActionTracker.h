@@ -17,7 +17,7 @@ class PlayerActionTracker final : public Red::IScriptable
 public:
     void RecordPlayerAction(RED4ext::CName actionName, RED4ext::gameinputActionType actionType, float value);
     void OnShoot(RED4ext::Handle<RED4ext::gameprojectileShootEvent> event);
-    void OnHit(RED4ext::Handle<RED4ext::GameObject> gameObject, RED4ext::Handle<RED4ext::gameHitEvent> event);
+    void OnHit(Red::Handle<Red::GameObject> gameObject, RED4ext::Handle<RED4ext::gameHitEvent> event);
     void OnMounting(RED4ext::Handle<RED4ext::game::mounting::MountingEvent> event);
     void OnUnmounting(RED4ext::Handle<RED4ext::game::mounting::UnmountingEvent> event);
     void OnItemEquipped(RED4ext::TweakDBID slot, RED4ext::ItemID item, bool isWeapon);

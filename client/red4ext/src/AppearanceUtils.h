@@ -3,5 +3,5 @@
 #include <string>
 
 namespace Cyberverse::AppearanceUtils {
-std::string GetPlayerAppearanceJson(const RED4ext::Handle<RED4ext::GameObject>& player);
+std::string GetPlayerAppearanceJson(const Red::Handle<Red::GameObject>& player);
 }

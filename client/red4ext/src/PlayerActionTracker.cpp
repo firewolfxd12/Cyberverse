@@ -52,7 +52,7 @@ void PlayerActionTracker::OnShoot(RED4ext::Handle<RED4ext::gameprojectileShootEv
     Red::GetGameSystem<NetworkGameSystem>()->EnqueueMessage(0, player_shoot);
 }
 
-void PlayerActionTracker::OnHit(RED4ext::Handle<RED4ext::GameObject> gameObject,
+void PlayerActionTracker::OnHit(Red::Handle<Red::GameObject> gameObject,
                                 RED4ext::Handle<RED4ext::gameHitEvent> event)
 {
     SDK->logger->InfoF(PLUGIN, "OnHit! %d", event->attackData->attackType);

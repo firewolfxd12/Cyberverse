@@ -1,13 +1,14 @@
 #include "AppearanceUtils.h"
 #include "RED4ext/Scripting/Functions.hpp"
+#include "RedLib.hpp"
 #include <string>
 
 namespace Cyberverse::AppearanceUtils {
-std::string GetPlayerAppearanceJson(const RED4ext::Handle<RED4ext::GameObject>& player)
+std::string GetPlayerAppearanceJson(const Red::Handle<Red::GameObject>& player)
 {
     // Placeholder implementation: only capture appearance name
     RED4ext::CName appName;
-    RED4ext::CallVirtual(player, "GetCurrentAppearanceName", appName);
+    Red::CallVirtual(player, "GetCurrentAppearanceName", appName);
     return std::string(appName.ToString());
 }
 }

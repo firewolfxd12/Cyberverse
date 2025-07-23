@@ -11,7 +11,7 @@
 
 namespace Cyberverse::Utils
 {
-    inline RED4ext::Handle<RED4ext::GameObject> GetPlayer()
+    inline Red::Handle<Red::GameObject> GetPlayer()
     {
         const auto system = Red::GetGameSystem<Red::PlayerSystem>();
         Red::Handle<Red::GameObject> player;
@@ -106,7 +106,7 @@ namespace Cyberverse::Utils
         return dbId;
     }
 
-    inline RED4ext::TweakDBID GameObject_GetRecordID(const RED4ext::Handle<RED4ext::GameObject>& object)
+    inline RED4ext::TweakDBID GameObject_GetRecordID(const Red::Handle<Red::GameObject>& object)
     {
         RED4ext::TweakDBID dbId = {};
         Red::CallVirtual(object, "GetRecordID", dbId);
