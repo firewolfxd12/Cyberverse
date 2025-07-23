@@ -14,6 +14,7 @@
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h> // Required, see https://github.com/ValveSoftware/GameNetworkingSockets/issues/171^
 #include <steam/steamnetworkingsockets.h>
+#include <steam/steamnetworkingtypes.h>
 
 #include "serverbound/AuthPacketsServerBound.h"
 #include "serverbound/WorldPacketsServerBound.h"
