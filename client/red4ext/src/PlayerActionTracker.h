@@ -1,7 +1,7 @@
 #pragma once
 
 #include <RED4ext/RED4ext.hpp>
-#include "RedLib.hpp"
+#include <RedLib.hpp>
 #include <Red/GameObject.hpp>
 
 #include "RED4ext/CName.hpp"
