@@ -174,11 +174,16 @@ bool NetworkGameSystem::EnqueueMessage(uint8_t channel_id, T content)
         return false;
     }
 
-    // TODO: derive the send flags from the channel id, i.e. lookup registered channels.
     assert(data.size() < std::numeric_limits<uint32_t>::max());
 
+    ESteamNetworkingSendFlags flags = k_nSteamNetworkingSend_Reliable;
+    if (channel_id == 1)
+    {
+        flags = k_nSteamNetworkingSend_Unreliable;
+    }
+
     const auto result = m_pInterface->SendMessageToConnection(
-        m_hConnection, data.data(), static_cast<uint32_t>(data.size()), k_nSteamNetworkingSend_Reliable, nullptr);
+        m_hConnection, data.data(), static_cast<uint32_t>(data.size()), flags, nullptr);
 
     if (result == k_EResultOK)
     {

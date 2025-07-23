@@ -79,18 +79,7 @@ public class PlayerPacketHandler
         foreach (var entity in playerEntities)
         {
             //Console.WriteLine($"Move {player.Name} ({player.ConnectionId} / {message.connectionId}) to ({positionUpdate.worldTransform.x}, {positionUpdate.worldTransform.y}, {positionUpdate.worldTransform.z})");
-            
-            // TODO: sometimes the game sends faulty updates to ~0, 3.16, 0.
-            // TODO: This is happening before the savegame has loaded. A better solution is to prevent updating networkEntityIds that are not spawned yet,
-            // because what happens here is that player.NetworkedEntityId is 0 because it has no entity yet, thus moving the old player.
-            // Note: this should already be solved.
-            if (content.worldTransform.z == 0 && content.worldTransform.x == 0.010673523f)
-            {
-                // TODO: we should really remove that.
-                Logger.Trace("Skipping position update");
-                return;
-            }
-                    
+
             entity.WorldTransform = content.worldTransform;
             entity.Yaw = content.yaw;
             _tracker!.UpdateTrackingOf(entity);

@@ -43,7 +43,7 @@ public class EntityTracker
             var apply = new ApplyAppearance
             {
                 networkedEntityId = entity.NetworkedEntityId,
-                dataLength = (uint)bytes.Length,
+                dataLength = (uint)count,
                 data = applyData
             };
 
