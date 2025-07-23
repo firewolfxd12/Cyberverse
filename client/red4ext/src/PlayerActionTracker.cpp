@@ -2,7 +2,7 @@
 #include "Main.h"
 #include "RED4ext/Api/Sdk.hpp"
 #include <RedLib.hpp>
-#include <RED4ext/Scripting/Natives/Generated/game/Object.hpp>
+#include <Red/GameObject.hpp>
 
 #include "NetworkGameSystem.h"
 #include "RED4ext/Scripting/Natives/Generated/game/MountEventData.hpp"
@@ -50,7 +50,15 @@ void PlayerActionTracker::OnShoot(RED4ext::Handle<RED4ext::gameprojectileShootEv
     PlayerShoot player_shoot = {};
     player_shoot.charge = event->params.charge;
     player_shoot.startPoint = Vector3 { event->startPoint.X, event->startPoint.Y, event->startPoint.Z };
-    player_shoot.itemIdWeapon = // TODO: FILL
+    if (!event->weapon.Expired())
+    {
+        auto weapon = event->weapon.Lock();
+        player_shoot.itemIdWeapon = Cyberverse::Utils::GameObject_GetRecordID(weapon).value;
+    }
+    else
+    {
+        player_shoot.itemIdWeapon = 0;
+    }
     Red::GetGameSystem<NetworkGameSystem>()->EnqueueMessage(0, player_shoot);
 }
 

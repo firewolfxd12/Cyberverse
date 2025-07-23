@@ -16,7 +16,7 @@ if (-Not (Test-Path $nativeBuildDir)) {
     New-Item -ItemType Directory -Path $nativeBuildDir | Out-Null
 }
 Push-Location $nativeBuildDir
-cmake .. 
+cmake ..
 Pop-Location
 
 # Build native C++ project using MSBuild
@@ -45,48 +45,3 @@ Pop-Location
 $clientSln = "$clientBuildDir\Cyberverse.RED4ext.sln"
 Write-Host ">> Compiling RED4ext client plugin..."
 & "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" $clientSln /p:Configuration=$vsBuildConfig
-
-# === Step 4: Deploy Artifacts ===
-Write-Host ">> Deploying build output..."
-
-# Deploy RED4ext client plugin DLL
-$pluginOut = "$clientBuildDir\src\Release\Cyberverse.Red4Ext.dll"
-$pluginDest = "C:\Program Files (x86)\Steam\steamapps\common\Cyberpunk 2077\red4ext\plugins\Cyberverse"
-if (-Not (Test-Path $pluginDest)) {
-    New-Item -ItemType Directory -Path $pluginDest | Out-Null
-}
-if (Test-Path $pluginOut) {
-    Copy-Item $pluginOut -Destination $pluginDest -Force
-} else {
-    Write-Warning "⚠ Plugin DLL not found: $pluginOut"
-}
-
-# Deploy redscript files
-$redscriptSrc = "$repoRoot\client\RedscriptModule\src\*.reds"
-$redscriptDest = "C:\Program Files (x86)\Steam\steamapps\common\Cyberpunk 2077\r6\scripts"
-Copy-Item $redscriptSrc -Destination $redscriptDest -Force
-
-# Deploy managed server output
-$managedOut = "$repoRoot\server\Managed\bin\$dotnetConfig\$dotnetFramework\*"
-$managedDest = "$repoRoot\server\Managed\out"
-if (-Not (Test-Path $managedDest)) {
-    New-Item -ItemType Directory -Path $managedDest | Out-Null
-}
-try {
-    Copy-Item $managedOut -Destination $managedDest -Recurse -Force
-} catch {
-    Write-Warning "⚠ Could not copy managed server output. Is the server running?"
-}
-
-# Deploy native server DLL to out
-$nativeDll = "$nativeBuildDir\src\Release\Cyberverse.Server.Native.dll"
-if (Test-Path $nativeDll) {
-    Copy-Item $nativeDll -Destination $managedDest -Force
-} else {
-    Write-Warning "⚠ Native server DLL not found: $nativeDll"
-}
-
-Write-Host "✅ Build and deployment complete."
-Write-Host "Run the server via:"
-Write-Host "`tcd server/Managed/out"
-Write-Host "`t./Cyberverse.Server.exe"

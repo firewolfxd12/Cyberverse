@@ -35,12 +35,18 @@ public class EntityTracker
 
         if (!string.IsNullOrEmpty(entity.AppearanceJson))
         {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(entity.AppearanceJson);
+            var applyData = new byte[512];
+            var count = System.Math.Min(bytes.Length, applyData.Length);
+            System.Array.Copy(bytes, applyData, count);
+
             var apply = new ApplyAppearance
             {
                 networkedEntityId = entity.NetworkedEntityId,
-                dataLength = (uint)System.Text.Encoding.UTF8.GetByteCount(entity.AppearanceJson),
-                data = System.Text.Encoding.UTF8.GetBytes(entity.AppearanceJson)
+                dataLength = (uint)count,
+                data = applyData
             };
+
             _server.EnqueueMessage(EMessageTypeClientbound.ApplyAppearance, connectionId, 0, apply);
         }
     }

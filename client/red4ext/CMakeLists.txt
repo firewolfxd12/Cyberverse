@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 # Add RED4ext.SDK as a dependency.
 
 # Uncomment the following line if you want to use the header-only version of RED4ext.SDK.
-#option(RED4EXT_HEADER_ONLY "" ON)
+option(RED4EXT_HEADER_ONLY "" ON)
 
 add_subdirectory(deps/red4ext.sdk)
 set_target_properties(RED4ext.SDK PROPERTIES FOLDER "Dependencies")
