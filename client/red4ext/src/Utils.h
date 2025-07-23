@@ -7,11 +7,12 @@
 #include "RED4ext/Scripting/Natives/Generated/ent/EntityID.hpp"
 #include "RED4ext/Scripting/Natives/Generated/game/Object.hpp"
 #include "RED4ext/Scripting/Natives/Generated/vehicle/BaseObject.hpp"
-#include "RedLib.hpp"
+#include <RedLib.hpp>
+#include <Red/GameObject.hpp>
 
 namespace Cyberverse::Utils
 {
-    inline RED4ext::Handle<RED4ext::GameObject> GetPlayer()
+    inline Red::Handle<Red::GameObject> GetPlayer()
     {
         const auto system = Red::GetGameSystem<Red::PlayerSystem>();
         Red::Handle<Red::GameObject> player;
@@ -103,6 +104,13 @@ namespace Cyberverse::Utils
     {
         RED4ext::TweakDBID dbId = {};
         Red::CallVirtual(vehicle, "GetRecordID", dbId);
+        return dbId;
+    }
+
+    inline RED4ext::TweakDBID GameObject_GetRecordID(const Red::Handle<Red::GameObject>& object)
+    {
+        RED4ext::TweakDBID dbId = {};
+        Red::CallVirtual(object, "GetRecordID", dbId);
         return dbId;
     }
 }

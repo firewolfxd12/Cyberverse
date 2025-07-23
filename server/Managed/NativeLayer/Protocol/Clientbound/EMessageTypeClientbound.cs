@@ -7,4 +7,6 @@ public enum EMessageTypeClientbound: ushort
     TeleportEntity = 2,
     DestroyEntity = 3,
     EquipItemEntity = 4,
+    ApplyAppearance = 5,
+    UpdateLocomotion = 6,
 }

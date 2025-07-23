@@ -3,6 +3,8 @@
 
 #include <queue>
 #include <serverbound/AuthPacketsServerBound.h>
+#include <serverbound/WorldPacketsServerBound.h>
+#include <serverbound/AppearancePacketsServerBound.h>
 
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
@@ -45,7 +47,7 @@ public:
     void OnConnectionStatusChanged(const SteamNetConnectionStatusChangedCallback_t* pInfo) const;
 public:
     /* DLL API start */
-    bool ListenOn(uint16_t nPort = 1337);
+    bool ListenOn(uint16_t nPort = 7777);
     void RunBlocking();
     void Update(float deltaTime);
 

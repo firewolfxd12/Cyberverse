@@ -1,6 +1,8 @@
 #include "PlayerActionTracker.h"
 #include "Main.h"
 #include "RED4ext/Api/Sdk.hpp"
+#include <RedLib.hpp>
+#include <Red/GameObject.hpp>
 
 #include "NetworkGameSystem.h"
 #include "RED4ext/Scripting/Natives/Generated/game/MountEventData.hpp"
@@ -29,6 +31,9 @@ void PlayerActionTracker::RecordPlayerAction(RED4ext::CName actionName, RED4ext:
         const auto [X, Y, Z, W] = Cyberverse::Utils::Entity_GetWorldPosition(player);
 
         PlayerActionTracked tracked = {};
+        // BUTTON_RELEASED means the key went up, all other types mark it as pressed
+        tracked.buttonState = actionType != RED4ext::game::input::ActionType::BUTTON_RELEASED;
+        tracked.networkTick = Red::GetGameSystem<NetworkGameSystem>()->NextNetworkTick();
         tracked.action = eACTION_JUMP;
 
         tracked.worldTransform = {};
@@ -49,7 +54,7 @@ void PlayerActionTracker::OnShoot(RED4ext::Handle<RED4ext::gameprojectileShootEv
     Red::GetGameSystem<NetworkGameSystem>()->EnqueueMessage(0, player_shoot);
 }
 
-void PlayerActionTracker::OnHit(RED4ext::Handle<RED4ext::GameObject> gameObject,
+void PlayerActionTracker::OnHit(Red::Handle<Red::GameObject> gameObject,
                                 RED4ext::Handle<RED4ext::gameHitEvent> event)
 {
     SDK->logger->InfoF(PLUGIN, "OnHit! %d", event->attackData->attackType);
@@ -126,8 +131,19 @@ void PlayerActionTracker::OnUnmounting(RED4ext::Handle<RED4ext::game::mounting::
     const RED4ext::game::Object* ptr = strongLock;
     const auto vehicleInstance = RED4ext::Handle((RED4ext::VehicleObject*)ptr);
 
-    // TODO: Read the networkedEntityId from the entity, so we can be precise and the server doesn't need to guess.
-    const PlayerUnmountCar unmount_car = {};
+    auto entityId = vehicleInstance->entityID;
+    const auto netIdOpt = Red::GetGameSystem<NetworkGameSystem>()->GetNetworkedEntityId(entityId);
+
+    PlayerUnmountCar unmount_car = {};
+    if (netIdOpt.has_value())
+    {
+        unmount_car.networkedEntityId = netIdOpt.value();
+    }
+    else
+    {
+        unmount_car.networkedEntityId = 0;
+    }
+
     Red::GetGameSystem<NetworkGameSystem>()->EnqueueMessage(0, unmount_car);
 }
 

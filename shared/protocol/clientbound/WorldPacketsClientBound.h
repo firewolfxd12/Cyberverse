@@ -15,7 +15,7 @@ struct SpawnEntity {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = eSpawnEntity;
-        frame.channel_id = 1; // TODO:
+        frame.channel_id = 1;
     }
 };
 
@@ -24,7 +24,7 @@ struct DestroyEntity {
 
     inline static void FillMessageFrame(MessageFrame& frame) {
         frame.message_type = eDestroyEntity;
-        frame.channel_id = 1; // TODO:
+        frame.channel_id = 1;
     }
 };
 
@@ -38,7 +38,7 @@ struct TeleportEntity
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = eTeleportEntity;
-        frame.channel_id = 1; // TODO:
+        frame.channel_id = 1;
     }
 };
 
@@ -52,6 +52,6 @@ struct EquipItemEntity {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = eEquipItemEntity;
-        frame.channel_id = 0; // TODO
+        frame.channel_id = 0;
     }
 };

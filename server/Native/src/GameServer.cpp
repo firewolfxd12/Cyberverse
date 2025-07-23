@@ -8,9 +8,11 @@
 #include <serverbound/EMessageTypeServerbound.h>
 #include <serverbound/AuthPacketsServerBound.h>
 #include <serverbound/WorldPacketsServerBound.h>
+#include <serverbound/AppearancePacketsServerBound.h>
 #include <clientbound/EMessageTypeClientbound.h>
 #include <clientbound/AuthPacketsClientBound.h>
 #include <clientbound/WorldPacketsClientBound.h>
+#include <clientbound/AppearancePacketsClientBound.h>
 
 bool GameServer::Initialize()
 {
@@ -182,11 +184,17 @@ bool GameServer::EnqueueMessage(HSteamNetConnection connection, uint8_t channel_
         return false;
     }
 
-    // TODO: derive the send flags from the channel id, i.e. lookup registered channels.
+    // Derive reliability based on the channel id
+    auto sendFlags = k_nSteamNetworkingSend_Reliable;
+    if (channel_id == 1)
+    {
+        sendFlags = k_nSteamNetworkingSend_Unreliable;
+    }
+
     assert(data.size() < std::numeric_limits<uint32_t>::max());
 
     const auto result = m_pInterface->SendMessageToConnection(connection, data.data(),
-        static_cast<uint32_t>(data.size()), k_nSteamNetworkingSend_Reliable, nullptr);
+        static_cast<uint32_t>(data.size()), sendFlags, nullptr);
 
     if (result == k_EResultOK)
     {
@@ -259,6 +267,8 @@ void GameServer::PollIncomingMessages()
             DESERIALIZE_RECV_QUEUE(ePlayerUnmountCar, PlayerUnmountCar)
             DESERIALIZE_RECV_QUEUE(ePlayerEquipItem, PlayerEquipItem)
             DESERIALIZE_RECV_QUEUE(ePlayerShoot, PlayerShoot)
+            DESERIALIZE_RECV_QUEUE(ePlayerAppearance, PlayerAppearance)
+            DESERIALIZE_RECV_QUEUE(ePlayerLocomotion, PlayerLocomotion)
             default:
                 printf("Unknown Message Type: %d\n", frame.message_type);
                 break;
@@ -338,6 +348,8 @@ void GameServer::ProcessSendQueue()
             SERIALIZE_SEND_QUEUE(eTeleportEntity, TeleportEntity)
             SERIALIZE_SEND_QUEUE(eDestroyEntity, DestroyEntity)
             SERIALIZE_SEND_QUEUE(eEquipItemEntity, EquipItemEntity)
+            SERIALIZE_SEND_QUEUE(eApplyAppearance, ApplyAppearance)
+            SERIALIZE_SEND_QUEUE(eUpdateLocomotion, UpdateLocomotion)
             default:
                 printf("Unknown messageType: %d\n", val.messageType);
         }

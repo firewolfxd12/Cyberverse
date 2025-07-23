@@ -18,7 +18,7 @@ struct InitAuthServerBound {
     inline static void FillMessageFrame(MessageFrame& frame)
     {
         frame.message_type = EINIT_AUTH;
-        frame.channel_id = 0; // TODO
+        frame.channel_id = 0;
     }
 };
 

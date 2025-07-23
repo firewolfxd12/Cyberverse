@@ -30,6 +30,6 @@ COPY --from=sdk /app .
 # linker flags to set RPATH to "." (who cares about /workspace/build), but that probably needs OS specific defines to only run on linux
 ENV LD_LIBRARY_PATH .
 USER $APP_UID
-# TODO: Use a non-cringe port.
-EXPOSE 1337
+# Use a more conventional port
+EXPOSE 7777
 ENTRYPOINT ["./Cyberverse.Server"]

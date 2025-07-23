@@ -8,4 +8,6 @@ enum EMessageTypeClientbound: uint16_t {
     eTeleportEntity = 2,
     eDestroyEntity = 3,
     eEquipItemEntity = 4,
+    eApplyAppearance = 5,
+    eUpdateLocomotion = 6,
 };

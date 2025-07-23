@@ -6,8 +6,10 @@ namespace Cyberverse.Server.NativeLayer.Protocol.Serverbound;
 [StructLayout(LayoutKind.Sequential, Pack = 8)]
 public struct PlayerActionTracked
 {
-    // TODO: bool buttonState? (We could trigger on press or release)
-    // TODO: uint64_t networkTick (relative to the connect in relative server timestamps, because we probably get those batched and relay those batched)
+    // True when the triggering button is pressed
+    public bool buttonState;
+    // Tick counter relative to the connection start
+    public ulong networkTick;
     public EPlayerAction action;
     public Vector3 worldTransform;
 }
