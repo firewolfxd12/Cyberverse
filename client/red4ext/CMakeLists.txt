@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Change the project name here!
-project(Cyberverse.Red4Ext LANGUAGES CXX)
+project(Cyberverse.Red4Ext LANGUAGES C CXX)
 
 # Set this option to ON to be able to use folders / filters in your project when using Visual Studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -29,7 +29,10 @@ add_library(zpp_bits INTERFACE)
 target_include_directories(zpp_bits INTERFACE "deps/zpp_bits")
 
 # Include Valve's GameNetworkingSockets
-find_package(GameNetworkingSockets CONFIG REQUIRED)
+find_package(GameNetworkingSockets CONFIG QUIET)
+if(NOT GameNetworkingSockets_FOUND)
+    add_subdirectory(deps/GameNetworkingSockets)
+endif()
 
 # Include red lib
 add_compile_definitions(NOMINMAX)
