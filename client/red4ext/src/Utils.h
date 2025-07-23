@@ -8,7 +8,7 @@
 #include "RED4ext/Scripting/Natives/Generated/game/Object.hpp"
 #include "RED4ext/Scripting/Natives/Generated/vehicle/BaseObject.hpp"
 #include <RedLib.hpp>
-#include <Red/GameObject.hpp>
+#include <RED4ext/Scripting/Natives/Generated/game/Object.hpp>
 
 namespace Cyberverse::Utils
 {

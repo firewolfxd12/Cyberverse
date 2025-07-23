@@ -1,7 +1,7 @@
 #include "AppearanceUtils.h"
 #include "RED4ext/Scripting/Functions.hpp"
 #include <RedLib.hpp>
-#include <Red/GameObject.hpp>
+#include <RED4ext/Scripting/Natives/Generated/game/Object.hpp>
 #include <string>
 
 namespace Cyberverse::AppearanceUtils {
