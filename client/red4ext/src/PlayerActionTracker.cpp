@@ -2,7 +2,7 @@
 #include "Main.h"
 #include "RED4ext/Api/Sdk.hpp"
 #include <RedLib.hpp>
-#include <Red/GameObject.hpp>
+#include <RED4ext/Scripting/Natives/Generated/game/Object.hpp>
 
 #include "NetworkGameSystem.h"
 #include "RED4ext/Scripting/Natives/Generated/game/MountEventData.hpp"
