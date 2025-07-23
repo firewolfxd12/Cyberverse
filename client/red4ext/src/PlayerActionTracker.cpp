@@ -1,6 +1,7 @@
 #include "PlayerActionTracker.h"
 #include "Main.h"
 #include "RED4ext/Api/Sdk.hpp"
+#include <RedLib.hpp>
 
 #include "NetworkGameSystem.h"
 #include "RED4ext/Scripting/Natives/Generated/game/MountEventData.hpp"

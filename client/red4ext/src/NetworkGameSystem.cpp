@@ -1,4 +1,5 @@
 #include "NetworkGameSystem.h"
+#include <RedLib.hpp>
 
 #include "CommandLine.h"
 #include "Main.h"
