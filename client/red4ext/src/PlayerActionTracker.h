@@ -5,7 +5,6 @@
 #include <RED4ext/Scripting/Natives/Generated/game/Object.hpp>
 
 #include "RED4ext/CName.hpp"
-#include "RED4ext/Scripting/Natives/Generated/game/Object.hpp"
 #include "RED4ext/Scripting/Natives/Generated/game/events/HitEvent.hpp"
 #include "RED4ext/Scripting/Natives/Generated/game/input/ActionType.hpp"
 #include "RED4ext/Scripting/Natives/Generated/game/mounting/MountingEvent.hpp"

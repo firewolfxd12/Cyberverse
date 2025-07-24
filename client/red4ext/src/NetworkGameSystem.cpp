@@ -177,7 +177,7 @@ bool NetworkGameSystem::EnqueueMessage(uint8_t channel_id, T content)
 
     assert(data.size() < std::numeric_limits<uint32_t>::max());
 
-    ESteamNetworkingSendFlags flags = k_nSteamNetworkingSend_Reliable;
+    int flags = k_nSteamNetworkingSend_Reliable;
     if (channel_id == 1)
     {
         flags = k_nSteamNetworkingSend_Unreliable;
