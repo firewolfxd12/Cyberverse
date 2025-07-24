@@ -397,6 +397,39 @@ void NetworkGameSystem::PollIncomingMessages()
         }
         break;
 
+        case eApplyAppearance:
+        {
+            ApplyAppearance apply = {};
+            if (zpp::bits::failure(in(apply)))
+            {
+                SDK->logger->Error(PLUGIN, "Faulty packet: ApplyAppearance");
+                pIncomingMsg->Release();
+                continue;
+            }
+
+            if (!m_networkedEntitiesLookup.contains(apply.networkedEntityId))
+            {
+                SDK->logger->WarnF(PLUGIN, "Unknown entity for ApplyAppearance %llu", apply.networkedEntityId);
+                break;
+            }
+
+            const auto entityId = m_networkedEntitiesLookup[apply.networkedEntityId];
+            auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
+            if (!entity.has_value())
+            {
+                SDK->logger->Info(PLUGIN, "Skipping ApplyAppearance");
+                break;
+            }
+
+            std::string appearance(reinterpret_cast<char*>(apply.data.data()), apply.dataLength);
+            auto obj = entity.value().As<Red::GameObject>();
+            if (obj)
+            {
+                Cyberverse::AppearanceUtils::ApplyAppearance(obj, appearance);
+            }
+        }
+        break;
+
         case eDestroyEntity:
         {
             DestroyEntity destroy_entity = {};
