@@ -14,6 +14,7 @@
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h> // Required, see https://github.com/ValveSoftware/GameNetworkingSockets/issues/171^
 #include <steam/steamnetworkingsockets.h>
+#include <steam/steamnetworkingtypes.h>
 
 #include "serverbound/AuthPacketsServerBound.h"
 #include "serverbound/WorldPacketsServerBound.h"
@@ -23,6 +24,9 @@
 #include "clientbound/AppearancePacketsClientBound.h"
 #include <cstring>
 #include "AppearanceUtils.h"
+
+#include <optional>
+#include <vector>
 
 #include <zpp_bits.h>
 
@@ -111,6 +115,7 @@ void NetworkGameSystem::OnNetworkUpdate(RED4ext::FrameInfo& frame_info, RED4ext:
     }
 
     PollIncomingMessages();
+    ProcessPendingEntityUpdates();
     TrackPlayerPosition(frame_info.deltaTime);
     TrackLocomotion(frame_info.deltaTime);
     InterpolatePuppets(frame_info.deltaTime);
@@ -176,7 +181,7 @@ bool NetworkGameSystem::EnqueueMessage(uint8_t channel_id, T content)
 
     assert(data.size() < std::numeric_limits<uint32_t>::max());
 
-    ESteamNetworkingSendFlags flags = k_nSteamNetworkingSend_Reliable;
+    int flags = k_nSteamNetworkingSend_Reliable;
     if (channel_id == 1)
     {
         flags = k_nSteamNetworkingSend_Unreliable;
@@ -357,10 +362,15 @@ void NetworkGameSystem::PollIncomingMessages()
             // TODO: If teleport flag is set
             //SetEntityPosition(entityId, worldPosition, teleport.yaw);
 
-            const auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
+            auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
             if (!entity.has_value())
             {
-                SDK->logger->Info(PLUGIN, "Skipping TeleportEntity");
+                PendingEntityUpdate upd{};
+                upd.id = entityId;
+                upd.position = worldPosition;
+                upd.yaw = teleport.yaw;
+                m_pendingUpdates.push_back(upd);
+                SDK->logger->Info(PLUGIN, "Queued TeleportEntity until entity exists");
                 break;
             }
 
@@ -393,6 +403,44 @@ void NetworkGameSystem::PollIncomingMessages()
             //  in contrast, we can just increase the time velocity of the interpolator
             const auto interpolation_data = InterpolationData(Cyberverse::Utils::Vector4To3(positionSource), teleport.targetPosition, yawSource, teleport.yaw, 0.1f);
             m_interpolationData[entityId] = interpolation_data;
+        }
+        break;
+
+        case eApplyAppearance:
+        {
+            ApplyAppearance apply = {};
+            if (zpp::bits::failure(in(apply)))
+            {
+                SDK->logger->Error(PLUGIN, "Faulty packet: ApplyAppearance");
+                pIncomingMsg->Release();
+                continue;
+            }
+
+            if (!m_networkedEntitiesLookup.contains(apply.networkedEntityId))
+            {
+                SDK->logger->WarnF(PLUGIN, "Unknown entity for ApplyAppearance %llu", apply.networkedEntityId);
+                break;
+            }
+
+            const auto entityId = m_networkedEntitiesLookup[apply.networkedEntityId];
+            auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
+            if (!entity.has_value())
+            {
+                PendingEntityUpdate upd{};
+                upd.id = entityId;
+                upd.appearance = std::string(reinterpret_cast<char*>(apply.data.data()), apply.dataLength);
+                m_pendingUpdates.push_back(upd);
+                SDK->logger->Info(PLUGIN, "Queued ApplyAppearance until entity exists");
+                break;
+            }
+
+            std::string appearance(reinterpret_cast<char*>(apply.data.data()), apply.dataLength);
+            const Red::Entity* basePtr = entity.value();
+            auto obj = Red::Handle<Red::GameObject>(reinterpret_cast<Red::GameObject*>(const_cast<Red::Entity*>(basePtr)));
+            if (obj)
+            {
+                Cyberverse::AppearanceUtils::ApplyAppearance(obj, appearance);
+            }
         }
         break;
 
@@ -560,4 +608,39 @@ std::optional<uint64_t> NetworkGameSystem::GetNetworkedEntityId(const RED4ext::e
         }
     }
     return std::nullopt;
+}
+
+void NetworkGameSystem::ProcessPendingEntityUpdates()
+{
+    auto it = m_pendingUpdates.begin();
+    while (it != m_pendingUpdates.end())
+    {
+        auto entity = Cyberverse::Utils::GetDynamicEntity(it->id);
+        if (entity.has_value())
+        {
+            const Red::Entity* basePtr = entity.value();
+            auto obj = Red::Handle<Red::GameObject>(reinterpret_cast<Red::GameObject*>(const_cast<Red::Entity*>(basePtr)));
+            if (obj && it->appearance.has_value())
+            {
+                Cyberverse::AppearanceUtils::ApplyAppearance(obj, it->appearance.value());
+            }
+            if (it->position.has_value() && it->yaw.has_value())
+            {
+                SetEntityPosition(it->id, it->position.value(), it->yaw.value());
+            }
+            it = m_pendingUpdates.erase(it);
+        }
+        else
+        {
+            if (++it->retries > 10)
+            {
+                SDK->logger->WarnF(PLUGIN, "Entity %llu still null", it->id.hash);
+                it = m_pendingUpdates.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
 }

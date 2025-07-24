@@ -8,7 +8,6 @@
 #include "RED4ext/Scripting/Natives/Generated/game/Object.hpp"
 #include "RED4ext/Scripting/Natives/Generated/vehicle/BaseObject.hpp"
 #include <RedLib.hpp>
-#include <Red/GameObject.hpp>
 
 namespace Cyberverse::Utils
 {
@@ -85,7 +84,10 @@ namespace Cyberverse::Utils
         Red::Handle<Red::Entity> entity;
         if (!Red::CallVirtual(dynamicEntitySystem, "GetEntity", entity, entityId) || entity == nullptr)
         {
-            SDK->logger->WarnF(PLUGIN, "Failed to get the entity (%llu) by id", entityId.hash);
+            if (entityId.hash != 0)
+            {
+                SDK->logger->WarnF(PLUGIN, "Failed to get the entity (%llu) by id", entityId.hash);
+            }
             return {};
         }
 
