@@ -17,6 +17,8 @@
 #include <clientbound/WorldPacketsClientBound.h>
 #include <clientbound/AppearancePacketsClientBound.h>
 #include <map>
+#include <optional>
+#include <vector>
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 
@@ -39,6 +41,16 @@ private:
     float m_TimeSinceLastPlayerPositionSync;
     uint64_t m_networkTickCounter = 0;
 
+    struct PendingEntityUpdate
+    {
+        RED4ext::ent::EntityID id;
+        std::optional<RED4ext::Vector4> position;
+        std::optional<float> yaw;
+        std::optional<std::string> appearance;
+        uint8_t retries = 0;
+    };
+    std::vector<PendingEntityUpdate> m_pendingUpdates;
+
 private:
     void OnRegisterUpdates(RED4ext::UpdateRegistrar* aRegistrar) override;
     bool OnGameRestored() override;
@@ -49,6 +61,7 @@ private:
     void OnNetworkUpdate(RED4ext::FrameInfo& frame_info, RED4ext::JobQueue& job_queue);
     void InterpolatePuppets(float deltaTime);
     void SetEntityPosition(RED4ext::ent::EntityID entityId, RED4ext::Vector4 worldPosition, float yaw);
+    void ProcessPendingEntityUpdates();
 
 protected:
     void PollIncomingMessages();

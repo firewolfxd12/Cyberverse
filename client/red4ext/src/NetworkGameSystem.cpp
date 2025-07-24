@@ -25,6 +25,9 @@
 #include <cstring>
 #include "AppearanceUtils.h"
 
+#include <optional>
+#include <vector>
+
 #include <zpp_bits.h>
 
 bool NetworkGameSystem::Load()
@@ -112,6 +115,7 @@ void NetworkGameSystem::OnNetworkUpdate(RED4ext::FrameInfo& frame_info, RED4ext:
     }
 
     PollIncomingMessages();
+    ProcessPendingEntityUpdates();
     TrackPlayerPosition(frame_info.deltaTime);
     TrackLocomotion(frame_info.deltaTime);
     InterpolatePuppets(frame_info.deltaTime);
@@ -358,10 +362,15 @@ void NetworkGameSystem::PollIncomingMessages()
             // TODO: If teleport flag is set
             //SetEntityPosition(entityId, worldPosition, teleport.yaw);
 
-            const auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
+            auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
             if (!entity.has_value())
             {
-                SDK->logger->Info(PLUGIN, "Skipping TeleportEntity");
+                PendingEntityUpdate upd{};
+                upd.id = entityId;
+                upd.position = worldPosition;
+                upd.yaw = teleport.yaw;
+                m_pendingUpdates.push_back(upd);
+                SDK->logger->Info(PLUGIN, "Queued TeleportEntity until entity exists");
                 break;
             }
 
@@ -417,7 +426,11 @@ void NetworkGameSystem::PollIncomingMessages()
             auto entity = Cyberverse::Utils::GetDynamicEntity(entityId);
             if (!entity.has_value())
             {
-                SDK->logger->Info(PLUGIN, "Skipping ApplyAppearance");
+                PendingEntityUpdate upd{};
+                upd.id = entityId;
+                upd.appearance = std::string(reinterpret_cast<char*>(apply.data.data()), apply.dataLength);
+                m_pendingUpdates.push_back(upd);
+                SDK->logger->Info(PLUGIN, "Queued ApplyAppearance until entity exists");
                 break;
             }
 
@@ -595,4 +608,39 @@ std::optional<uint64_t> NetworkGameSystem::GetNetworkedEntityId(const RED4ext::e
         }
     }
     return std::nullopt;
+}
+
+void NetworkGameSystem::ProcessPendingEntityUpdates()
+{
+    auto it = m_pendingUpdates.begin();
+    while (it != m_pendingUpdates.end())
+    {
+        auto entity = Cyberverse::Utils::GetDynamicEntity(it->id);
+        if (entity.has_value())
+        {
+            const Red::Entity* basePtr = entity.value();
+            auto obj = Red::Handle<Red::GameObject>(reinterpret_cast<Red::GameObject*>(const_cast<Red::Entity*>(basePtr)));
+            if (obj && it->appearance.has_value())
+            {
+                Cyberverse::AppearanceUtils::ApplyAppearance(obj, it->appearance.value());
+            }
+            if (it->position.has_value() && it->yaw.has_value())
+            {
+                SetEntityPosition(it->id, it->position.value(), it->yaw.value());
+            }
+            it = m_pendingUpdates.erase(it);
+        }
+        else
+        {
+            if (++it->retries > 10)
+            {
+                SDK->logger->WarnF(PLUGIN, "Entity %llu still null", it->id.hash);
+                it = m_pendingUpdates.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
 }
