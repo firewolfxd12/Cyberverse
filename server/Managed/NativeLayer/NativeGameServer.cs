@@ -5,6 +5,7 @@ public class NativeGameServer
     private static bool _hadSuccessfulNativeInit = false;
     private readonly ushort _listeningPort;
     private readonly IntPtr _nativePtr;
+    private readonly Native.ConnectionStateChangedCallback _connectionStateCallback;
     
     public NativeGameServer(ushort listeningPort)
     {
@@ -20,7 +21,8 @@ public class NativeGameServer
 
         _listeningPort = listeningPort;
         _nativePtr = Native.server_create(listeningPort);
-        Native.server_set_connection_state_changed_cb(_nativePtr, OnConnectionStateChange);
+        _connectionStateCallback = OnConnectionStateChange;
+        Native.server_set_connection_state_changed_cb(_nativePtr, _connectionStateCallback);
     }
 
     public virtual void Update(float deltaTime)
