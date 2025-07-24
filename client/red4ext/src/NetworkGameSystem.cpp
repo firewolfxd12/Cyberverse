@@ -422,7 +422,8 @@ void NetworkGameSystem::PollIncomingMessages()
             }
 
             std::string appearance(reinterpret_cast<char*>(apply.data.data()), apply.dataLength);
-            auto obj = entity.value().As<Red::GameObject>();
+            const Red::Entity* basePtr = entity.value();
+            auto obj = Red::Handle<Red::GameObject>(reinterpret_cast<Red::GameObject*>(const_cast<Red::Entity*>(basePtr)));
             if (obj)
             {
                 Cyberverse::AppearanceUtils::ApplyAppearance(obj, appearance);
