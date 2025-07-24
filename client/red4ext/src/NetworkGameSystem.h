@@ -48,6 +48,7 @@ private:
         std::optional<float> yaw;
         std::optional<std::string> appearance;
         uint8_t retries = 0;
+        uint8_t readyFrames = 0;
     };
     std::vector<PendingEntityUpdate> m_pendingUpdates;
 

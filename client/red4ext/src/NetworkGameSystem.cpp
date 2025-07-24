@@ -618,6 +618,13 @@ void NetworkGameSystem::ProcessPendingEntityUpdates()
         auto entity = Cyberverse::Utils::GetDynamicEntity(it->id);
         if (entity.has_value())
         {
+            // Wait one frame after the entity becomes available so its components are ready
+            if (it->readyFrames++ == 0)
+            {
+                ++it;
+                continue;
+            }
+
             const Red::Entity* basePtr = entity.value();
             auto obj = Red::Handle<Red::GameObject>(reinterpret_cast<Red::GameObject*>(const_cast<Red::Entity*>(basePtr)));
             if (obj && it->appearance.has_value())
